@@ -1,36 +1,41 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider, connect } from 'react-redux';
 import store, { incrementCounter } from './store'; // imported for you already
 
-class Counter extends React.Component {
-	constructor() {
-		super();
-		this.state = store.getState();
-		//this.increment = this.increment.bind(this);
-	}
+const Counter = (props) => {
+	console.log('rendering counter', props);
+	const { count, increment } = props;
 
-	componentDidMount() {
-		this.unsubscribe = store.subscribe(() => this.setState(store.getState()));
-	}
-
-	componentWillUnmount() {
-		this.unsubscribe();
-	}
-
-	increment() {
-		store.dispatch(incrementCounter());
-	}
-
-	render() {
-		return (
-			<div id="container">
-				<div id="counter">
-					<h1>{this.state.count}</h1>
-					<button onClick={this.increment}>Increment</button>
-				</div>
+	return (
+		<div id="container">
+			<div id="counter">
+				<h1>{count}</h1>
+				<button onClick={increment}>Increment</button>
 			</div>
-		);
-	}
-}
+		</div>
+	);
+};
 
-ReactDOM.render(<Counter />, document.getElementById('app'));
+const mapStateToProps = (state) => {
+	console.log('map state to props', state);
+	return {
+		count: state.count
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	console.log('map Dispatch To Props');
+	return {
+		increment: () => dispatch(incrementCounter())
+	};
+};
+
+const ConnectedCounter = connect(mapStateToProps, mapDispatchToProps)(Counter);
+
+ReactDOM.render(
+	<Provider store={store}>
+		<ConnectedCounter />
+	</Provider>,
+	document.getElementById('app')
+);
